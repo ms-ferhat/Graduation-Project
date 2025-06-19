@@ -221,9 +221,10 @@ static void touch_read(lv_indev_t *drv, lv_indev_data_t *data) {
 }
 
 static void button_event_handler(lv_event_t *e) {
-    printf("Button touched!\n"); // 👈 Add this for checking only
+    printf("Button touched!\n"); // Add this for checking only
     lv_obj_t *btn = lv_event_get_target(e);
-    uint32_t btn_id = (uint32_t)lv_event_get_user_data(e);
+    uint32_t btn_id = (uint32_t)lv_event_get_user_data(e); // Get the button ID from user data
+
 
     switch (btn_id) {
         case 1:
