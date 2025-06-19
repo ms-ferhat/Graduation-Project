@@ -30,7 +30,7 @@ int AES_decrypt(const unsigned char *ciphertext, int ciphertext_len, const unsig
 // Function prototypes for RSA encryption and decryption
 int RSA_generate_keys(char *public_key_path, char *private_key_path);
 int RSA_encrypt(const unsigned char *plaintext, const char *ciphertext_file, const char *public_key_path);
-int RAS_decrypt(const char *ciphertext_file, unsigned char *plaintext, const char *private_key_path);
+int RSA_decrypt(const char *ciphertext_file, unsigned char *plaintext, const char *private_key_path);
 
 // Function prototypes for SHA-256 hashing
 void sha256_string(const char *str, char outputBuffer[65]);

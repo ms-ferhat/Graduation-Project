@@ -20,12 +20,18 @@ typedef struct
     unsigned char filehash[AES_KEY_LENGTH+1]; // Hash of the file
 }voice_Message;
 
+// enum to define node(sender, receiver) types
+typedef enum {
+    SENDER = 0,
+    RECEIVER = 1
+} NodeType;
 
-int Communication_inti(int Type);
-int Send_Text_Message(unsigned char *message);
-int Recive_Text_Message(Text_Message *message);
-int Send_Voice_Message(voice_Message *message);
-int Recive_Voice_Message(voice_Message *message);
+int Communication_Setup();
+int Communication_inti(NodeType node_type, const char *receiver_ip);
+int Send_Text_Message(unsigned char *message, unsigned char *receiver_ip);
+int Recive_Text_Message(unsigned char *decrypted_message);
+int Send_Voice_Message(unsigned char *filename, unsigned char *receiver_ip);
+int Recive_Voice_Message(char *filename);
 #endif SECURE_COM_H
 
 
