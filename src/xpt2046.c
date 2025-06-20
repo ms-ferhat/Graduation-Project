@@ -85,3 +85,5 @@ void XPT2046_Close(void) {
     bcm2835_spi_end();
     bcm2835_close();
 }
+
+
