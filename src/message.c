@@ -1,4 +1,5 @@
 #include "message.h"
+#include "encryption.h"
 #include "transfer.h"
 int Communication_Setup()
 {
@@ -206,4 +207,20 @@ int Recive_Voice_Message(char *filename)
     fwrite(decrypted_voice_message, 1, strlen(decrypted_voice_message), decrypted_file);
     fclose(decrypted_file);
     
+}
+int handle_sending(MessageType message_type, const char *receiver_ip, const char *message)
+{
+    //
+    if (message_type == TEXT_MESSAGE) {
+        Send_Text_Message((unsigned char *)message, (unsigned char *)receiver_ip);
+    } else if (message_type == VOICE_MESSAGE) {
+        return Send_Voice_Message((unsigned char *)message, (unsigned char *)receiver_ip);
+    } else {
+        fprintf(stderr, "Unknown message type\n");
+        return -1;
+    }
+}
+int handle_receiving(MessageType message_type, const char *filename)
+{
+
 }
