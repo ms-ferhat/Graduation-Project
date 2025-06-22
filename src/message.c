@@ -129,40 +129,17 @@ int Send_Voice_Message(unsigned char *filename, unsigned char *receiver_ip)
 {
   
     unsigned char session_key[AES_KEY_LENGTH];
-    unsigned char message_buffer[BUFFER_SIZE];
+    unsigned char encrypted_file[FILENAME_SIZE]="encrypted_voice_message.bin";
 
     // load the session key
     Get_Session_Key(session_key);
 
-    //read the voice file int buffer
-    FILE *file = fopen((const char *)filename, "rb");
-    if (!file) {
-        fprintf(stderr, "Error opening voice file\n");
-        return -1;
-    }
-    size_t bytes_read = fread(message_buffer, 1, BUFFER_SIZE, file);
-    fclose(file);
-    if (bytes_read == 0) {
-        fprintf(stderr, "Error reading voice file or file is empty\n");
-        return -1;
-    }
-    // Encrypt the voice message using AES
-    unsigned char encrypted_message[BUFFER_SIZE];
-    AES_encrypt(message_buffer, bytes_read, session_key, encrypted_message);
-    printf("Encrypted voice message: %s\n", encrypted_message);    
-    // Calculate the hash of the encrypted message
+    // encrypt voice message using AES
+    AES_Encrypt_file(filename, encrypted_file, session_key);
+    printf("Voice message encrypted successfully.\n");
+    //send encrypted voice message file
+    send_file_ex(receiver_ip, encrypted_file,NULL,0);
     
-    // save the encrypted message to a file
-    FILE *encrypted_file = fopen("encrypted_voice_message.bin", "wb");
-    if (!encrypted_file) {
-        fprintf(stderr, "Error opening file to save encrypted voice message\n");
-        return -1;
-    }
-    fwrite(encrypted_message, 1, strlen(encrypted_message), encrypted_file);
-    fclose(encrypted_file);
-
-    // send encrypted voice message file
-    send_file(receiver_ip, "encrypted_voice_message.bin");
     printf("Voice message sent successfully.\n");
 
 }
@@ -170,57 +147,19 @@ int Recive_Voice_Message(char *filename)
 {
     // This function will receive the encrypted voice message file
     unsigned char session_key[AES_KEY_LENGTH];
-    unsigned char encrypted_message[BUFFER_SIZE];  
+    unsigned char decrypt_filename[FILENAME_SIZE]= "voice_message.wav";
 
     // load the session key
     Get_Session_Key(session_key);
-
-    // receive the encrypted voice message file
-    receive_file(filename);
+    // receive encrypted voice message file
+    receive_file_ex(filename, FILENAME_SIZE,NULL,0);
     printf("Voice message received successfully.\n");
-
-    // read the encrypted voice message from the file
-    FILE *file = fopen(filename, "rb");
-    if (!file) {
-        fprintf(stderr, "Error opening received voice file\n");
-        return -1;  
-    }
-    size_t bytes_read = fread(encrypted_message, 1, BUFFER_SIZE, file);
-    fclose(file);
-    if (bytes_read == 0) {
-        fprintf(stderr, "Error reading received voice file or file is empty\n");
-        return -1;  
-    }
-    printf("Encrypted voice message: %s\n", encrypted_message);    
-
-
-    // Decrypt the voice message using AES
-    unsigned char decrypted_voice_message[BUFFER_SIZE];
-    AES_decrypt(encrypted_message, bytes_read, session_key, decrypted_voice_message);
-
-    // Save the decrypted voice message to a new file
-    FILE *decrypted_file = fopen("decrypted_voice_message.bin", "wb");
-    if (!decrypted_file) {
-        fprintf(stderr, "Error opening file to save decrypted voice message\n");
-        return -1;  
-    }
-    fwrite(decrypted_voice_message, 1, strlen(decrypted_voice_message), decrypted_file);
-    fclose(decrypted_file);
     
-}
-int handle_sending(MessageType message_type, const char *receiver_ip, const char *message)
-{
-    //
-    if (message_type == TEXT_MESSAGE) {
-        Send_Text_Message((unsigned char *)message, (unsigned char *)receiver_ip);
-    } else if (message_type == VOICE_MESSAGE) {
-        return Send_Voice_Message((unsigned char *)message, (unsigned char *)receiver_ip);
-    } else {
-        fprintf(stderr, "Unknown message type\n");
-        return -1;
-    }
-}
-int handle_receiving(MessageType message_type, const char *filename)
-{
+    // decrypt voice message using AES
+    AES_Decrypt_file(filename, decrypt_filename, session_key);
+    printf("Voice message decrypted successfully.\n");
 
+    // sign decrypted filename to return filename
+    strncpy(filename, decrypt_filename, strlen(decrypt_filename) - 1);
+    return 0;
 }
