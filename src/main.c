@@ -49,6 +49,7 @@ void custom_delay(uint32_t ms)
 void *communication_thread(void *arg) {
     while(1) {
         // Handle Reciveing Messages
+        
     }
 
     return NULL;
