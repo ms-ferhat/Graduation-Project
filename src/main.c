@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "lvgl/lvgl.h"
 #include "xpt2046.h"
 #include "message.h"
@@ -44,6 +45,23 @@ void custom_delay(uint32_t ms)
     usleep(ms * 1000);  // Convert milliseconds to microseconds
 }
 
+// define Communication Thread
+void *communication_thread(void *arg) {
+    while(1) {
+        // Handle Reciveing Messages
+    }
+
+    return NULL;
+}
+void Start_Communication_Thread() {
+    pthread_t Com_thread;
+    if (pthread_create(&Com_thread, NULL, communication_thread, NULL) != 0) {
+        fprintf(stderr, "Error creating communication thread\n");
+        return;
+    }
+    pthread_detach(Com_thread); // Detach the thread to avoid memory leaks
+}
+
 /*                        The main function  */
 int main() {
 
@@ -79,7 +97,11 @@ int main() {
     lv_indev_set_type(touch_indev,LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(touch_indev, touch_read);
 
+    // Initialize the communication
 
+
+    // Start the communication thread
+    Start_Communication_Thread();
    /**********************************************************/
     //create_corner_squares();
    /**********************************************************/

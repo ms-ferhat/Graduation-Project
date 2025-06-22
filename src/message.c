@@ -1,4 +1,5 @@
 #include "message.h"
+#include "encryption.h"
 #include "transfer.h"
 int Communication_Setup()
 {
@@ -161,5 +162,4 @@ int Recive_Voice_Message(char *filename)
     // sign decrypted filename to return filename
     strncpy(filename, decrypt_filename, strlen(decrypt_filename) - 1);
     return 0;
-
 }
