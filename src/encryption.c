@@ -343,3 +343,108 @@ void sha256_file(const char *filename, char outputBuffer[65]) {
         sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
     outputBuffer[hash_len * 2] = '\0';
 }
+
+// AES file encryption function
+int AES_Encrypt_file(const char *in_filename, const char *out_filename, const unsigned char *key) {
+    FILE *in_file = fopen(in_filename, "rb");
+    FILE *out_file = fopen(out_filename, "wb");
+    if (!in_file || !out_file) {
+        if (in_file) fclose(in_file);
+        if (out_file) fclose(out_file);
+        return -1;
+    }
+
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        fclose(in_file);
+        fclose(out_file);
+        return -1;
+    }
+
+    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, NULL)) {
+        EVP_CIPHER_CTX_free(ctx);
+        fclose(in_file);
+        fclose(out_file);
+        return -1;
+    }
+
+    unsigned char in_buf[BUFFER_SIZE];
+    unsigned char out_buf[BUFFER_SIZE + AES_BLOCK_SIZE];
+    int in_len, out_len;
+
+    while ((in_len = fread(in_buf, 1, BUFFER_SIZE, in_file)) > 0) {
+        if (1 != EVP_EncryptUpdate(ctx, out_buf, &out_len, in_buf, in_len)) {
+            EVP_CIPHER_CTX_free(ctx);
+            fclose(in_file);
+            fclose(out_file);
+            return -1;
+        }
+        fwrite(out_buf, 1, out_len, out_file);
+    }
+
+    if (1 != EVP_EncryptFinal_ex(ctx, out_buf, &out_len)) {
+        EVP_CIPHER_CTX_free(ctx);
+        fclose(in_file);
+        fclose(out_file);
+        return -1;
+    }
+    fwrite(out_buf, 1, out_len, out_file);
+
+    EVP_CIPHER_CTX_free(ctx);
+    fclose(in_file);
+    fclose(out_file);
+
+    return 0;
+}
+// AES file decryption function
+int AES_Decrypt_file(const char *in_filename, const char *out_filename, const unsigned char *key) {
+    FILE *in_file = fopen(in_filename, "rb");
+    FILE *out_file = fopen(out_filename, "wb");
+    if (!in_file || !out_file) {
+        if (in_file) fclose(in_file);
+        if (out_file) fclose(out_file);
+        return -1;
+    }
+
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        fclose(in_file);
+        fclose(out_file);
+        return -1;
+    }
+
+    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, NULL)) {
+        EVP_CIPHER_CTX_free(ctx);
+        fclose(in_file);
+        fclose(out_file);
+        return -1;
+    }
+
+    unsigned char in_buf[BUFFER_SIZE];
+    unsigned char out_buf[BUFFER_SIZE + AES_BLOCK_SIZE];
+    int in_len, out_len;
+
+    while ((in_len = fread(in_buf, 1, BUFFER_SIZE, in_file)) > 0) {
+        if (1 != EVP_DecryptUpdate(ctx, out_buf, &out_len, in_buf, in_len)) {
+            EVP_CIPHER_CTX_free(ctx);
+            fclose(in_file);
+            fclose(out_file);
+            return -1;
+        }
+        fwrite(out_buf, 1, out_len, out_file);
+    }
+
+    if (1 != EVP_DecryptFinal_ex(ctx, out_buf, &out_len)) {
+        EVP_CIPHER_CTX_free(ctx);
+        fclose(in_file);
+        fclose(out_file);
+        return -1;
+    }
+    fwrite(out_buf, 1, out_len, out_file);
+
+    EVP_CIPHER_CTX_free(ctx);
+    fclose(in_file);
+    fclose(out_file);
+
+    return 0;
+}

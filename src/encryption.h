@@ -25,6 +25,8 @@ void Set_Session_Key(unsigned char *key );
 void Get_Session_Key(unsigned char *key);
 int AES_encrypt(const unsigned char *plaintext, int plaintext_len, const unsigned char *key, unsigned char *ciphertext);
 int AES_decrypt(const unsigned char *ciphertext, int ciphertext_len, const unsigned char *key, unsigned char *plaintext);
+int AES_Encrypt_file(const char *in_filename, const char *out_filename, const unsigned char *key);
+int AES_Decrypt_file(const char *in_filename, const char *out_filename, const unsigned char *key);
 
 
 // Function prototypes for RSA encryption and decryption
