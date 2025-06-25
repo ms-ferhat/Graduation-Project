@@ -1,5 +1,5 @@
-#include "ui.h"
-//voice_message_event_cb
+#include "main.h"
+//chat_history.txt
 static lv_obj_t *record_button_obj_ptr = NULL; // Pointer to the voice record button
 static lv_timer_t *record_timer = NULL; // Timer for button color change
 static lv_obj_t *global_chat_panel_ptr = NULL;// Declare chat_panel globally so record_button_event can access it
@@ -41,7 +41,6 @@ lv_obj_t *ta;
 lv_obj_t *kb;
 lv_obj_t *send_btn;
 lv_obj_t *record_btn;
-
 static void pass_recieved_message(MessageType type, const char* inputPath, char** outputText){
     if((type == MSG_TYPE_VOICE) && (inputPath != NULL)){
         if (next_received_voice_index < MAX_VOICE_MESSAGES) {
@@ -237,7 +236,7 @@ static void create_voice_message_bubble(lv_obj_t *parent, const char *file_path,
     lv_obj_remove_flag(msg_bubble, LV_OBJ_FLAG_SCROLLABLE);
 
     // Voice messages are slightly narrower than text messages.
-    lv_obj_set_width(msg_bubble, LV_PCT(60));
+    lv_obj_set_width(msg_bubble, LV_PCT(80));
     lv_obj_set_height(msg_bubble, LV_SIZE_CONTENT);
     lv_obj_set_style_pad_all(msg_bubble, 5, LV_PART_MAIN);
     lv_obj_set_style_radius(msg_bubble, 15, LV_PART_MAIN);
@@ -253,7 +252,7 @@ static void create_voice_message_bubble(lv_obj_t *parent, const char *file_path,
         lv_obj_set_align(msg_bubble, LV_ALIGN_TOP_LEFT);
         lv_obj_set_style_bg_color(msg_bubble, lv_color_hex(0xE0E0E0), LV_PART_MAIN);
         lv_obj_set_style_bg_opa(msg_bubble, LV_OPA_100, LV_PART_MAIN);
-        lv_obj_set_style_text_color(msg_bubble, lv_color_hex(0x333333), LV_PART_MAIN);
+        lv_obj_set_style_text_color(msg_bubble, lv_color_white(), LV_PART_MAIN);
         lv_obj_set_style_pad_left(msg_bubble, 10, LV_PART_MAIN);
     }
 
@@ -286,7 +285,7 @@ static void create_voice_message_bubble(lv_obj_t *parent, const char *file_path,
     lv_obj_set_width(label, LV_SIZE_CONTENT); // Width adjusts to content.
     lv_obj_set_style_pad_left(label, 5, LV_PART_MAIN); // Padding between icon and text.
     // Text color matches the bubble's text color.
-    lv_obj_set_style_text_color(label, is_sent ? lv_color_white() : lv_color_hex(0x333333), LV_PART_MAIN); // Corrected: lv_color_white()
+    lv_obj_set_style_text_color(label, is_sent ? lv_color_white() : lv_color_white(), LV_PART_MAIN); // Corrected: lv_color_white()
 }
 /*****************************************************************************************************/
 
@@ -614,6 +613,18 @@ void lvgl_init_display(){
     lv_display_set_buffers(my_disp, buf1, buf2, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
 }
 
+void create_hello_world_ui() {
+    lv_obj_t *scr = lv_display_get_screen_active(my_disp);
+    lv_obj_set_style_bg_color(scr, lv_color_hex(0x003a57), LV_PART_MAIN);
+    lv_obj_t *label = lv_label_create(scr);
+    lv_label_set_text(label, "Hello, World!");
+    lv_obj_align(label, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+}
+static void custom_delay(uint32_t ms)
+{
+   // printf("call custom delay function/n");
+    usleep(ms * 1000);  // Convert milliseconds to microseconds
+}
 
 
 // Touchscreen read function for LVGL
@@ -631,6 +642,56 @@ static void touch_read(lv_indev_t *drv, lv_indev_data_t *data) {
         data->state = LV_INDEV_STATE_RELEASED;
        // printf("Buttons  arn't with %d and %d are released \n",x,y); // 👈 Add this >
     }
+}
+/*                        The main function  */
+int main() {
+
+
+    printf("main start\n");
+    lv_init();
+    printf("lv initializied\n");
+    lv_delay_set_cb(custom_delay);
+
+
+  //  printf("lvgl init successful");
+
+    if (!bcm2835_init()) {
+        printf("bcm2835 init failed!\n");
+        return 1;
+    }
+
+
+    bcm2835_spi_begin();
+    bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
+    bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
+    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
+    bcm2835_gpio_fsel(ILI9341_RST, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(ILI9341_DC, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(ILI9341_CS, BCM2835_GPIO_FSEL_OUTP);
+
+    ili9341_reset();
+    lvgl_init_display();
+    printf("lvgl dispay init done\n");
+    load_chat_history();// --- Load chat history at startup ---
+	creat_UI_1();
+    lv_indev_t *touch_indev = lv_indev_create();
+    lv_indev_set_type(touch_indev,LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(touch_indev, touch_read);
+
+
+   /**********************************************************/
+    //create_corner_squares();
+   /**********************************************************/
+   XPT2046_Init();
+	const uint32_t TICK_PERIOD = 5;  // 5 ms tick
+    while (1) {
+		lv_tick_inc(TICK_PERIOD);
+        lv_timer_handler();
+        custom_delay(TICK_PERIOD*2);
+
+    }
+
+    return 0;
 }
 
 

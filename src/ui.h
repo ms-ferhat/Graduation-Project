@@ -1,5 +1,5 @@
-#ifndef UI_H
-#define UI_H
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <bcm2835.h>
 #include <stdio.h>
@@ -52,8 +52,8 @@ typedef struct {
 void ili9341_reset();
 void lvgl_clear_screen(void);
 void ili9341_write(uint8_t data, uint8_t is_data);
-void my_lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, const uint8_t *param, size_t param_size);
-void my_lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param, size_t param_size);
+void  my_lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, const uint8_t *param, size_t param_size);
+void  my_lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param, size_t param_size);
 
 void creat_UI_1();
 void create_UI_2(lv_event_t *e);
