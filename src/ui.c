@@ -1,11 +1,10 @@
-#include "main.h"
+#include "ui.h"
 //chat_history.txt
 static lv_obj_t *record_button_obj_ptr = NULL; // Pointer to the voice record button
 static lv_timer_t *record_timer = NULL; // Timer for button color change
 static lv_obj_t *global_chat_panel_ptr = NULL;// Declare chat_panel globally so record_button_event can access it
 static lv_obj_t *ui2_text_area_ptr = NULL; // Pointer to the text area in UI_2
 
-static void touch_read(lv_indev_t *drv, lv_indev_data_t *data);
 static void ta_event_cb(lv_event_t *e);
 static void record_button_event(lv_event_t *e);
 static void refresh_chat_display(void); // Function to refresh the chat panel content
@@ -32,8 +31,6 @@ static int next_record_file_num = 1; // Used to generate unique filenames like s
 
 static ChatMessage chat_history[MAX_CHAT_HISTORY_SIZE];
 static int chat_history_count = 0; // Current number of messages in the history
-
-
 /* Global objects */
 lv_display_t *my_disp;
 lv_obj_t *msg_list;
@@ -41,6 +38,8 @@ lv_obj_t *ta;
 lv_obj_t *kb;
 lv_obj_t *send_btn;
 lv_obj_t *record_btn;
+
+
 static void pass_recieved_message(MessageType type, const char* inputPath, char** outputText){
     if((type == MSG_TYPE_VOICE) && (inputPath != NULL)){
         if (next_received_voice_index < MAX_VOICE_MESSAGES) {
@@ -593,43 +592,13 @@ void back_to_UI_1_event_cb(lv_event_t * e) {
     //refresh_chat_display(); // already don in create_UI_1
 }
 
-void lvgl_init_display(){
 
-   bcm2835_gpio_write(ILI9341_CS, LOW);
-    /* Create LVGL display object */
-   my_disp = lv_lcd_generic_mipi_create(LCD_H_RES, LCD_V_RES,  LV_LCD_FLAG_MIRROR_X, my_lcd_send_cmd, my_lcd_send_color);
-    //lv_display_set_rotation(my_disp, LV_DISPLAY_ROTATION_90);
 
-    /* Allocate draw buffers */
-    uint32_t buf_size = LCD_H_RES * LCD_BUF_LINES * lv_color_format_get_size(lv_display_get_color_format(my_disp));
-    uint8_t *buf1 = malloc(buf_size);
-    uint8_t *buf2 = malloc(buf_size); // Second buffer for double buffering
-
-    if (buf1 == NULL || buf2 == NULL) {
-        printf("Display buffer allocation failed!\n");
-        return;
-    }
-
-    lv_display_set_buffers(my_disp, buf1, buf2, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
-}
-
-void create_hello_world_ui() {
-    lv_obj_t *scr = lv_display_get_screen_active(my_disp);
-    lv_obj_set_style_bg_color(scr, lv_color_hex(0x003a57), LV_PART_MAIN);
-    lv_obj_t *label = lv_label_create(scr);
-    lv_label_set_text(label, "Hello, World!");
-    lv_obj_align(label, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-}
-static void custom_delay(uint32_t ms)
-{
-   // printf("call custom delay function/n");
-    usleep(ms * 1000);  // Convert milliseconds to microseconds
-}
 
 
 // Touchscreen read function for LVGL
 
-static void touch_read(lv_indev_t *drv, lv_indev_data_t *data) {
+void touch_read(lv_indev_t *drv, lv_indev_data_t *data) {
     uint16_t x=0;
     uint16_t y=0;
     if (XPT2046_GetTouch(&x,&y)) {
@@ -643,56 +612,7 @@ static void touch_read(lv_indev_t *drv, lv_indev_data_t *data) {
        // printf("Buttons  arn't with %d and %d are released \n",x,y); // 👈 Add this >
     }
 }
-/*                        The main function  */
-int main() {
 
-
-    printf("main start\n");
-    lv_init();
-    printf("lv initializied\n");
-    lv_delay_set_cb(custom_delay);
-
-
-  //  printf("lvgl init successful");
-
-    if (!bcm2835_init()) {
-        printf("bcm2835 init failed!\n");
-        return 1;
-    }
-
-
-    bcm2835_spi_begin();
-    bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
-    bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
-    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
-    bcm2835_gpio_fsel(ILI9341_RST, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_gpio_fsel(ILI9341_DC, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_gpio_fsel(ILI9341_CS, BCM2835_GPIO_FSEL_OUTP);
-
-    ili9341_reset();
-    lvgl_init_display();
-    printf("lvgl dispay init done\n");
-    load_chat_history();// --- Load chat history at startup ---
-	creat_UI_1();
-    lv_indev_t *touch_indev = lv_indev_create();
-    lv_indev_set_type(touch_indev,LV_INDEV_TYPE_POINTER);
-    lv_indev_set_read_cb(touch_indev, touch_read);
-
-
-   /**********************************************************/
-    //create_corner_squares();
-   /**********************************************************/
-   XPT2046_Init();
-	const uint32_t TICK_PERIOD = 5;  // 5 ms tick
-    while (1) {
-		lv_tick_inc(TICK_PERIOD);
-        lv_timer_handler();
-        custom_delay(TICK_PERIOD*2);
-
-    }
-
-    return 0;
-}
 
 
 void ili9341_reset() {
@@ -760,4 +680,23 @@ static void ta_event_cb(lv_event_t *e)
         lv_keyboard_set_textarea(kb, NULL);
         lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
     }
+}
+void lvgl_init_display(){
+
+   bcm2835_gpio_write(ILI9341_CS, LOW);
+    /* Create LVGL display object */
+   my_disp = lv_lcd_generic_mipi_create(LCD_H_RES, LCD_V_RES,  LV_LCD_FLAG_MIRROR_X, my_lcd_send_cmd, my_lcd_send_color);
+    //lv_display_set_rotation(my_disp, LV_DISPLAY_ROTATION_90);
+
+    /* Allocate draw buffers */
+    uint32_t buf_size = LCD_H_RES * LCD_BUF_LINES * lv_color_format_get_size(lv_display_get_color_format(my_disp));
+    uint8_t *buf1 = malloc(buf_size);
+    uint8_t *buf2 = malloc(buf_size); // Second buffer for double buffering
+
+    if (buf1 == NULL || buf2 == NULL) {
+        printf("Display buffer allocation failed!\n");
+        return;
+    }
+
+    lv_display_set_buffers(my_disp, buf1, buf2, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
 }

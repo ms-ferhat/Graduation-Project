@@ -39,7 +39,6 @@ void create_corner_squares(void) {
 }
 /************************************************************************/
 
-
 void custom_delay(uint32_t ms)
 {
     usleep(ms * 1000);  // Convert milliseconds to microseconds
@@ -116,6 +115,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
