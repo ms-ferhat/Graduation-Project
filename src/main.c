@@ -29,6 +29,10 @@ void custom_delay(uint32_t ms)
 void *communication_thread(void *arg) {
     while(1) {
         // Handle Reciveing Messages
+        char message_type;
+        char filename[FILENAME_SIZE];
+        // Recive message type and filename
+        receive_string(&message_type, filename);
     }
 
     return NULL;
@@ -79,7 +83,7 @@ int main() {
 
     // Initialize the communication
     Communication_Setup();
-    Communication_inti(SENDER,receiver_ip)
+    Communication_inti(SENDER,receiver_ip);
 
 
     // Start the communication thread
