@@ -45,7 +45,9 @@ typedef struct {
     const char* content_ptr; // Points to the text string or the voice file path in the storage arrays
 } ChatMessage;
 
-
+// Define Global Variables
+extern char snder_ip[16] = "192.168.1.5";
+extern char receiver_ip[16] = "192.168.1.8";
 // --- Dynamic Storage for Message Content ---
 // These arrays hold the actual string data for text messages and received voice paths.
 // Sent voice paths are handled by recorded_voice_paths_storage.
