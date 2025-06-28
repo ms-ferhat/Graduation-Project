@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdio.h>
-
+#include "ui.h"
 
 
 // enum to define node(sender, receiver) types
@@ -21,7 +21,7 @@ int Recive_Text_Message(unsigned char *decrypted_message);
 int Send_Voice_Message(unsigned char *filename, unsigned char *receiver_ip);
 int Recive_Voice_Message(char *filename);
 //int handle_sending(MessageType message_type, const char *receiver_ip, const char *message);
-//int handle_receiving(MessageType message_type, const char *filename);
+int handle_receiving(MessageType message_type, const char *filename);
 #endif //SECURE_COM_H
 
 

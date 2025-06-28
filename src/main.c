@@ -18,26 +18,7 @@
 
 
 
-/**********************************************************************
-#define SQUARE_SIZE 10  // Size of each square
-void create_corner_squares(void) {
-    lv_obj_t *btn_tl = lv_button_create(lv_screen_active());
-    lv_obj_set_size(btn_tl, SQUARE_SIZE, SQUARE_SIZE);
-    lv_obj_set_pos(btn_tl, 0, 0);  // Top-left
 
-    lv_obj_t *btn_tr = lv_button_create(lv_screen_active());
-    lv_obj_set_size(btn_tr, SQUARE_SIZE, SQUARE_SIZE);
-    lv_obj_align(btn_tr, LV_ALIGN_TOP_RIGHT, 0, 0);  // Top-right
-
-    lv_obj_t *btn_bl = lv_button_create(lv_screen_active());
-    lv_obj_set_size(btn_bl, SQUARE_SIZE, SQUARE_SIZE);
-    lv_obj_align(btn_bl, LV_ALIGN_BOTTOM_LEFT, 0, 0);  // Bottom-left
-
-    lv_obj_t *btn_br = lv_button_create(lv_screen_active());
-    lv_obj_set_size(btn_br, SQUARE_SIZE, SQUARE_SIZE);
-    lv_obj_align(btn_br, LV_ALIGN_BOTTOM_RIGHT, 0, 0);  // Bottom-right
-}
-/************************************************************************/
 
 void custom_delay(uint32_t ms)
 {
@@ -97,6 +78,8 @@ int main() {
     lv_indev_set_read_cb(touch_indev, touch_read);
 
     // Initialize the communication
+    Communication_Setup();
+    Communication_inti(SENDER,receiver_ip)
 
 
     // Start the communication thread

@@ -164,3 +164,25 @@ int Recive_Voice_Message(char *filename)
     return 0;
 }
 
+int handle_receiving(MessageType message_type,char *filename)
+{
+    // define var to hold received message type
+    
+    message_type = (MessageType)(*receive_string();)
+    if (received_message_type == MSG_TYPE_TEXT) {
+        unsigned char decrypted_message[BUFFER_SIZE];
+        Recive_Text_Message(decrypted_message);
+        printf("Received text message: %s\n", decrypted_message);
+        // show recived message in UI
+        pass_recieved_message(MSG_TYPE_TEXT, NULL, (char **)&decrypted_message);
+    } else if (received_message_type == MSG_TYPE_VOICE) {
+        Recive_Voice_Message((char *)filename);
+        printf("Received voice message saved to: %s\n", filename);
+        // show recived message in UI
+        pass_recieved_message(MSG_TYPE_VOICE, filename, NULL);
+    } else {
+        fprintf(stderr, "Unknown message type received.\n");
+        return -1; // Error handling for unknown message type
+    }
+    return 0; // Return success
+}

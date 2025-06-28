@@ -9,6 +9,8 @@
 #include "lvgl/lvgl.h"
 #include <unistd.h>
 #include "xpt2046.h"
+#include "message.h"
+#include "transfer.h"
 #include <stdlib.h>
 
 
@@ -28,7 +30,7 @@
 #define RECORD_DURATION_SEC 10 // Duration of voice recording in seconds
 #define MAX_CHAT_HISTORY_SIZE (MAX_TEXT_MESSAGES * 2 + MAX_VOICE_MESSAGES * 2)
 
-#define HISTORY_FILE_PATH "/home/gp/chat_history.txt"
+#define HISTORY_FILE_PATH "~/chat_history.txt"
 
 // --- Unified Chat Message Data Structure ---
 // Defines the type of message and its properties
@@ -61,6 +63,7 @@ void lvgl_init_display();
 void creat_UI_1();
 void create_UI_2(lv_event_t *e);
 void voice_message_event_cb(lv_event_t * e); //play voice message when press
+void pass_recieved_message(MessageType type, const char* inputPath, char** outputText);
 void send_text_message_event_cb(lv_event_t * e); // Callback for sending text messages
 void back_to_UI_1_event_cb(lv_event_t * e); // Callback to switch back to UI_1
 

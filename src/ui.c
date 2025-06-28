@@ -11,7 +11,7 @@ static void refresh_chat_display(void); // Function to refresh the chat panel co
 static void add_message_to_history(MessageType type, bool is_sent, const char* content_ptr);
 static void create_text_message_bubble(lv_obj_t *parent, const char *text, bool is_sent);
 static void create_voice_message_bubble(lv_obj_t *parent, const char *file_path, bool is_sent);
-static void pass_recieved_message(MessageType type, const char* inputPath, char** outputText);
+void pass_recieved_message(MessageType type, const char* inputPath, char** outputText);
 
 // Storage for dynamically sent text messages my_disp
 static char sent_text_storage[MAX_TEXT_MESSAGES][128];
@@ -38,6 +38,10 @@ lv_obj_t *ta;
 lv_obj_t *kb;
 lv_obj_t *send_btn;
 lv_obj_t *record_btn;
+
+// Define Global Variables
+char snder_ip[16] = "192.168.1.5";
+char receiver_ip[16] = "192.168.1.8";
 
 
 static void pass_recieved_message(MessageType type, const char* inputPath, char** outputText){
@@ -559,7 +563,13 @@ void load_chat_history() {
 void send_text_message_event_cb(lv_event_t * e) {
     if (ui2_text_area_ptr != NULL) {
         const char *text = lv_textarea_get_text(ui2_text_area_ptr);
+        MessageType msg_type= MSG_TYPE_TEXT; // Default message type for text
+        
         if (strlen(text) > 0) {
+            // send message type
+            send_string(receiver_ip,(const char)&msg_type););
+            // send message  logic
+            Send_Text_Message(text,receiver_ip);
             if (next_sent_text_index < MAX_TEXT_MESSAGES) {
                 // Copy text to our dynamic storage
                 strcpy(sent_text_storage[next_sent_text_index], text);
