@@ -1,6 +1,8 @@
 #include "message.h"
 #include "encryption.h"
 #include "transfer.h"
+#include "lvgl/lvgl.h"
+
 int Communication_Setup()
 {
     // Generate and Store AES Session Key
@@ -83,7 +85,7 @@ int Communication_inti(NodeType node_type,const char *receiver_ip)
 
 }
 
-int Send_Text_Message(unsigned char *message, unsigned char *receiver_ip)
+int Send_Text_Message(const char *message, unsigned char *receiver_ip)
 {
     unsigned char cipher_message[BUFFER_SIZE];
     unsigned char session_key[AES_KEY_LENGTH];

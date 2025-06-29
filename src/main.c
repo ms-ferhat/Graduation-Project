@@ -32,7 +32,7 @@ void *communication_thread(void *arg) {
         char message_type;
         char filename[FILENAME_SIZE];
         // Recive message type and filename
-        receive_string(&message_type, filename);
+        handle_receiving(message_type, filename);
     }
 
     return NULL;
@@ -82,8 +82,7 @@ int main() {
     lv_indev_set_read_cb(touch_indev, touch_read);
 
     // Initialize the communication
-    Communication_Setup();
-    Communication_inti(SENDER,receiver_ip);
+    
 
 
     // Start the communication thread
