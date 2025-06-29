@@ -560,12 +560,15 @@ void load_chat_history() {
  */
 void send_text_message_event_cb(lv_event_t * e) {
     if (ui2_text_area_ptr != NULL) {
+        printf("Send Button pressed!!\n");
         const char *text = lv_textarea_get_text(ui2_text_area_ptr);
-        const char msg_type=1; // Default message type for text
+        const char msg_type='0'; // Default message type for text
         
         if (strlen(text) > 0) {
             // send message type
             send_string(receiver_ip,&msg_type);
+            // delay some time to ensure the message type is sent before the text
+            lv_delay_ms(1000);
             // send message  logic
             Send_Text_Message(text,receiver_ip);
             if (next_sent_text_index < MAX_TEXT_MESSAGES) {

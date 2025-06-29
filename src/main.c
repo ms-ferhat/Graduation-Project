@@ -13,13 +13,6 @@
 #include "ui.h"
 
 
-
-
-
-
-
-
-
 void custom_delay(uint32_t ms)
 {
     usleep(ms * 1000);  // Convert milliseconds to microseconds
@@ -27,12 +20,45 @@ void custom_delay(uint32_t ms)
 
 // define Communication Thread
 void *communication_thread(void *arg) {
+
+    char filename[FILENAME_SIZE];
+
     while(1) {
         // Handle Reciveing Messages
-        char message_type;
-        char filename[FILENAME_SIZE];
-        // Recive message type and filename
-        handle_receiving(message_type, filename);
+        // reciver type of the message
+        char *message_type = receive_message();
+        // Check if the message type is '0' or '1'
+        if (message_type != NULL) {
+            if (strcmp(message_type, "0") == 0) {
+                // Handle message type '0'
+                char *message_content = receive_string();
+                if (message_content != NULL) {
+                    printf("Received message type '0': %s\n", message_content);
+                    // Process the message content as needed
+                    // Show message content in the UI
+                    free(message_content); // Free the allocated memory for message content
+                }
+            } else if (strcmp(message_type, "1") == 0) {
+                // Handle message type voice message
+                receive_file_ex(filename, FILENAME_SIZE, NULL, 0);
+                // Show the received file in the UI
+                if (strlen(filename) > 0) {
+                    printf("Received voice message file: %s\n", filename);
+                    // Process the file as needed, e.g., play the audio or display it in the UI
+                } else {
+                    printf("No voice message file received\n"); 
+
+                }
+            } else {
+                // Handle unknown message type
+                printf("Received unknown message type: %s\n", message_type);
+            }
+            free(message_type); // Free the allocated memory for message type
+        } else {
+            // Handle the case where no message was received
+            printf("No message received\n");
+        }
+            
     }
 
     return NULL;
