@@ -68,6 +68,8 @@ void voice_message_event_cb(lv_event_t * e); //play voice message when press
 void pass_recieved_message(MessageType type, const char* inputPath, char** outputText);
 void send_text_message_event_cb(lv_event_t * e); // Callback for sending text messages
 void back_to_UI_1_event_cb(lv_event_t * e); // Callback to switch back to UI_1
+void refresh_chat_display(void); // Function to refresh the chat panel content
+
 
 // Persistence functions
 void save_chat_history();

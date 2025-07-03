@@ -1,15 +1,20 @@
+
+
 LVGL_PATH := lvgl
 $(info LVGL_PATH is set to: $(LVGL_PATH))
 include lvgl/lvgl.mk
 
-CSRCS += main.c xpt2046.c message.c transfer.c encryption.c ui.c
+# add your own source files here
+CSRCS := $(wildcard *.c)
+
+
 # Compiler and flags
 CFLAGS += -Werror   -I$(LVGL_PATH)/..
 COBJS := $(patsubst %.c, %.o, $(CSRCS))
-# Add bcm2835 library and LVGL
-LDFLAGS += -lbcm2835
-# add cyrpto library
-LDFLAGS += -lcrypto
+
+# Add linking flags
+LDFLAGS += -lbcm2835 -lcrypto
+
 main: $(COBJS)
         $(CC) -o $@ $^ $(LDFLAGS)
 

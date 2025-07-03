@@ -7,7 +7,6 @@ static lv_obj_t *ui2_text_area_ptr = NULL; // Pointer to the text area in UI_2
 
 static void ta_event_cb(lv_event_t *e);
 static void record_button_event(lv_event_t *e);
-static void refresh_chat_display(void); // Function to refresh the chat panel content
 static void add_message_to_history(MessageType type, bool is_sent, const char* content_ptr);
 static void create_text_message_bubble(lv_obj_t *parent, const char *text, bool is_sent);
 static void create_voice_message_bubble(lv_obj_t *parent, const char *file_path, bool is_sent);
@@ -330,7 +329,7 @@ static void add_message_to_history(MessageType type, bool is_sent, const char* c
  * @brief Clears the current chat panel and repopulates it from the chat_history array.
  * This ensures messages are displayed in chronological order and the view scrolls to the bottom.
  */
-static void refresh_chat_display(void) {
+void refresh_chat_display(void) {
     if (global_chat_panel_ptr == NULL) {
         LV_LOG_ERROR("global_chat_panel_ptr is NULL. Cannot refresh chat display.");
         return;
@@ -711,3 +710,6 @@ void lvgl_init_display(){
 
     lv_display_set_buffers(my_disp, buf1, buf2, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
 }
+
+
+
